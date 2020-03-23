@@ -16,6 +16,17 @@ function get() {
 
 function set() {
   console.log("Called SET", key, value);
+  try {
+    // Read db.json
+    const passwordsJSON = fs.readFileSync("./db.json", "utf8");
+    const passwords = JSON.parse(passwordsJSON);
+    // Update value by key
+    passwords[key] = value;
+    // Write db.json
+    fs.writeFileSync("./db.json", JSON.stringify(passwords, null, 2));
+  } catch (error) {
+    console.error(error);
+  }
 }
 
 if (command === "get") {
