@@ -1,9 +1,17 @@
+const fs = require("fs");
+
 const [command, key, value] = process.argv.slice(2);
 
 function get() {
   console.log("Called GET", key);
   // Read and log db.json
-  console.log("db");
+  try {
+    const passswordsJSON = fs.readFileSync("./db.json", "utf8");
+    const passwords = JSON.parse(passswordsJSON);
+    console.log(key, passwords[key]);
+  } catch (error) {
+    console.error(error);
+  }
 }
 
 function set() {
