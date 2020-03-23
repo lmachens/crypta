@@ -32,7 +32,7 @@ function set() {
 }
 
 function unset() {
-  console.log("Called UNSET", key, value);
+  console.log("Called UNSET", key);
   try {
     const passwordsJSON = fs.readFileSync("./db.json", "utf8");
     const passwords = JSON.parse(passwordsJSON);
