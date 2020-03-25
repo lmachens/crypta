@@ -1,5 +1,15 @@
-const { get, set, unset, reset } = require("./lib/commands");
-const { askForPassword, askForMasterPassword } = require("./lib/questions");
+const {
+  get,
+  set,
+  unset,
+  reset,
+  changeMasterPassword,
+} = require("./lib/commands");
+const {
+  askForPassword,
+  askForMasterPassword,
+  askQuestion,
+} = require("./lib/questions");
 const { readMasterPassword } = require("./lib/passwords");
 const { verifyHash } = require("./lib/crypto");
 
@@ -11,6 +21,21 @@ async function run() {
   if (command === "reset") {
     return reset(answeredMasterPassword);
   }
+
+  if (command === "change") {
+    const answer = await askQuestion(
+      "Are you sure you want to change your master password? (y/n)"
+    );
+    if (answer !== "y") {
+      return;
+    }
+
+    const newMasterPassword = await askQuestion(
+      "Please enter new master password:"
+    );
+    return changeMasterPassword(newMasterPassword);
+  }
+
   const masterPassword = readMasterPassword();
 
   if (!verifyHash(answeredMasterPassword, masterPassword)) {
