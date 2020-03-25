@@ -51,7 +51,7 @@ async function run() {
       await get(key, masterPassword);
     } else if (command === "set") {
       const password = await askForPassword(key);
-      set(key, password, masterPassword);
+      await set(key, password, masterPassword);
     } else if (command === "unset") {
       unset(key);
     } else {
