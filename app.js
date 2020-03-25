@@ -21,6 +21,7 @@ async function run() {
     // Connect with db
     await connect();
     const answeredMasterPassword = await askForMasterPassword();
+    const masterPassword = await getMasterPassword();
 
     if (command === "reset") {
       await reset(answeredMasterPassword);
@@ -38,10 +39,9 @@ async function run() {
       const newMasterPassword = await askQuestion(
         "Please enter new master password:"
       );
-      return changeMasterPassword(newMasterPassword);
+      await changeMasterPassword(newMasterPassword, masterPassword);
+      return;
     }
-
-    const masterPassword = await getMasterPassword();
 
     if (!verifyHash(answeredMasterPassword, masterPassword)) {
       console.error("Fuck off!");
