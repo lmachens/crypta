@@ -23,7 +23,8 @@ async function run() {
     const answeredMasterPassword = await askForMasterPassword();
 
     if (command === "reset") {
-      return reset(answeredMasterPassword);
+      await reset(answeredMasterPassword);
+      return;
     }
 
     if (command === "change") {
