@@ -53,7 +53,7 @@ async function run() {
       const password = await askForPassword(key);
       await set(key, password, masterPassword);
     } else if (command === "unset") {
-      unset(key);
+      await unset(key);
     } else {
       console.error("Unknown command");
     }
