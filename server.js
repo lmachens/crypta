@@ -20,6 +20,18 @@ app.get("/", (request, response) => {
   response.send(indexHTML);
 });
 
+// Check if the user knows the master password
+// Middleware
+app.use(async (request, response, next) => {
+  const userMasterPassword = request.headers["master-password"];
+  const masterPassword = await getMasterPassword();
+  if (!userMasterPassword || !verifyHash(userMasterPassword, masterPassword)) {
+    response.status(403).send("Fuck off!");
+    return;
+  }
+  next();
+});
+
 app.get("/passwords/:name", async (request, response) => {
   const { name } = request.params;
 
@@ -31,13 +43,7 @@ app.get("/passwords/:name", async (request, response) => {
     return;
   }
 
-  const userMasterPassword = request.headers["master-password"];
   const masterPassword = await getMasterPassword();
-  if (!userMasterPassword || !verifyHash(userMasterPassword, masterPassword)) {
-    response.status(403).send("Fuck off!");
-    return;
-  }
-
   const decryptedPassword = decrypt(password, masterPassword);
   response.send(decryptedPassword);
 });
@@ -45,13 +51,7 @@ app.get("/passwords/:name", async (request, response) => {
 app.post("/passwords", async (request, response) => {
   const { name, password } = request.body;
 
-  const userMasterPassword = request.headers["master-password"];
   const masterPassword = await getMasterPassword();
-  if (!userMasterPassword || !verifyHash(userMasterPassword, masterPassword)) {
-    response.status(403).send("Fuck off!");
-    return;
-  }
-
   const encryptedPassword = encrypt(password, masterPassword);
   await setPassword(name, encryptedPassword);
   response.status(201).send("Good job! Password created 🐱‍👤");
