@@ -12,6 +12,11 @@ app.get("/", (request, response) => {
 app.get("/passwords/:name", async (request, response) => {
   const { name } = request.params;
   const password = await getPassword(name);
+  if (!password) {
+    response.status(404);
+    response.send(`${name} not found 🐱‍👤`);
+    return;
+  }
   response.send(password);
 });
 
