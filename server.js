@@ -1,11 +1,18 @@
 const express = require("express");
 const { connect } = require("./lib/db");
-const { getPassword, getMasterPassword } = require("./lib/queries");
-const { decrypt, verifyHash } = require("./lib/crypto");
+const {
+  getPassword,
+  getMasterPassword,
+  setPassword,
+} = require("./lib/queries");
+const { decrypt, encrypt, verifyHash } = require("./lib/crypto");
 const fs = require("fs");
+const bodyParser = require("body-parser");
 
 const app = express();
 const port = 8000;
+
+app.use(bodyParser.json()); // for parsing application/json
 
 app.get("/", (request, response) => {
   const indexHTML = fs.readFileSync("./public/index.html", "utf8");
@@ -33,6 +40,21 @@ app.get("/passwords/:name", async (request, response) => {
 
   const decryptedPassword = decrypt(password, masterPassword);
   response.send(decryptedPassword);
+});
+
+app.post("/passwords", async (request, response) => {
+  const { name, password } = request.body;
+
+  const userMasterPassword = request.headers["master-password"];
+  const masterPassword = await getMasterPassword();
+  if (!userMasterPassword || !verifyHash(userMasterPassword, masterPassword)) {
+    response.status(403).send("Fuck off!");
+    return;
+  }
+
+  const encryptedPassword = encrypt(password, masterPassword);
+  await setPassword(name, encryptedPassword);
+  response.status(201).send("Good job! Password created 🐱‍👤");
 });
 
 // async function startServer() {
