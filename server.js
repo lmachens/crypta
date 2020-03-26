@@ -1,6 +1,7 @@
 const express = require("express");
 const { connect } = require("./lib/db");
-const { getPassword } = require("./lib/queries");
+const { getPassword, getMasterPassword } = require("./lib/queries");
+const { decrypt } = require("./lib/crypto");
 
 const app = express();
 const port = 8000;
@@ -12,12 +13,16 @@ app.get("/", (request, response) => {
 app.get("/passwords/:name", async (request, response) => {
   const { name } = request.params;
   const password = await getPassword(name);
+
   if (!password) {
     response.status(404);
     response.send(`${name} not found 🐱‍👤`);
     return;
   }
-  response.send(password);
+
+  const masterPassword = await getMasterPassword();
+  const decryptedPassword = decrypt(password, masterPassword);
+  response.send(decryptedPassword);
 });
 
 // async function startServer() {
