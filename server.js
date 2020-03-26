@@ -57,6 +57,22 @@ app.post("/passwords", async (request, response) => {
   response.status(201).send("Good job! Password created 🐱‍👤");
 });
 
+app.patch("/passwords/:name", async (request, response) => {
+  const { name, password } = request.body;
+
+  const existingPassword = await getPassword(name);
+  if (!existingPassword) {
+    response.status(404);
+    response.send(`${name} not found 🐱‍👤`);
+    return;
+  }
+
+  const masterPassword = await getMasterPassword();
+  const encryptedPassword = encrypt(password, masterPassword);
+  await setPassword(name, encryptedPassword);
+  response.status(201).send("Good job! Password updated 🐱‍👤");
+});
+
 // async function startServer() {
 //   await connect();
 //   console.log("Database is connected");
