@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Crypta</title>
+  </head>
+  <body>
+    <form class="form">
+      <label>
+        Password name
+        <input class="name" />
+      </label>
+      <label>
+        Master password
+        <input class="master-password" />
+      </label>
+      <button type="submit">Gimme password 🐱‍👤</button>
+    </form>
+    <div class="result">Waiting for password...</div>
+
+    <script>
+      const form = document.querySelector(".form");
+      const name = document.querySelector(".name");
+      const masterPassword = document.querySelector(".master-password");
+      const result = document.querySelector(".result");
+
+      form.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        try {
+          const response = await fetch(`/passwords/${name.value}`, {
+            headers: {
+              "Master-Password": masterPassword.value,
+            },
+          });
+          const password = await response.text();
+          result.innerHTML = password;
+        } catch (error) {
+          result.innerHTML = `Error!! ${error.status}`;
+        }
+      });
+    </script>
+  </body>
+</html>

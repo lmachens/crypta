@@ -2,12 +2,15 @@ const express = require("express");
 const { connect } = require("./lib/db");
 const { getPassword, getMasterPassword } = require("./lib/queries");
 const { decrypt, verifyHash } = require("./lib/crypto");
+const fs = require("fs");
 
 const app = express();
 const port = 8000;
 
 app.get("/", (request, response) => {
-  response.send("<b>Hallo fische</b>");
+  const indexHTML = fs.readFileSync("./public/index.html", "utf8");
+  response.set("Content-Type", "text/html");
+  response.send(indexHTML);
 });
 
 app.get("/passwords/:name", async (request, response) => {
