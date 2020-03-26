@@ -4,6 +4,7 @@ const {
   getPassword,
   getMasterPassword,
   setPassword,
+  unsetPassword,
 } = require("./lib/queries");
 const { decrypt, encrypt, verifyHash } = require("./lib/crypto");
 const fs = require("fs");
@@ -71,6 +72,14 @@ app.patch("/passwords/:name", async (request, response) => {
   const encryptedPassword = encrypt(password, masterPassword);
   await setPassword(name, encryptedPassword);
   response.status(201).send("Good job! Password updated 🐱‍👤");
+});
+
+app.delete("/passwords/:name", async (request, response) => {
+  const { name } = request.params;
+
+  await unsetPassword(name);
+
+  response.status(200).send("Awesome! You removed it! 🐱‍👤");
 });
 
 // async function startServer() {
