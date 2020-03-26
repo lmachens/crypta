@@ -1,7 +1,7 @@
 const express = require("express");
 const { connect } = require("./lib/db");
 const { getPassword, getMasterPassword } = require("./lib/queries");
-const { decrypt } = require("./lib/crypto");
+const { decrypt, verifyHash } = require("./lib/crypto");
 
 const app = express();
 const port = 8000;
@@ -12,6 +12,7 @@ app.get("/", (request, response) => {
 
 app.get("/passwords/:name", async (request, response) => {
   const { name } = request.params;
+
   const password = await getPassword(name);
 
   if (!password) {
@@ -20,7 +21,13 @@ app.get("/passwords/:name", async (request, response) => {
     return;
   }
 
+  const userMasterPassword = request.headers["master-password"];
   const masterPassword = await getMasterPassword();
+  if (!userMasterPassword || !verifyHash(userMasterPassword, masterPassword)) {
+    response.status(403).send("Fuck off!");
+    return;
+  }
+
   const decryptedPassword = decrypt(password, masterPassword);
   response.send(decryptedPassword);
 });
