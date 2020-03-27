@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Crypta</title>
+    <style>
+      .form {
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+      }
+    </style>
+  </head>
+  <body>
+    <form class="form">
+      <label>
+        Master password
+        <input class="master-password" />
+      </label>
+      <label>
+        Password name
+        <input class="name" />
+      </label>
+      <label>
+        New value
+        <input class="password" />
+      </label>
+      <button class="get">GET password 🐱‍👤</button>
+      <button class="post">POST password 🐱‍👤</button>
+      <button class="patch">PATCH password 🐱‍👤</button>
+      <button class="remove">DELETE password 🐱‍👤</button>
+    </form>
+    <div class="result">Waiting for password...</div>
+
+    <script>
+      const form = document.querySelector(".form");
+      const name = document.querySelector(".name");
+      const password = document.querySelector(".password");
+      const masterPassword = document.querySelector(".master-password");
+      const result = document.querySelector(".result");
+      const get = document.querySelector(".get");
+      const post = document.querySelector(".post");
+      const patch = document.querySelector(".patch");
+      const remove = document.querySelector(".remove");
+
+      form.addEventListener("submit", (event) => {
+        event.preventDefault();
+      });
+
+      async function fetchPassword(method) {
+        try {
+          const options = {
+            method,
+            headers: {
+              "Master-Password": masterPassword.value,
+              "Content-Type": "application/json",
+            },
+          };
+          if (method !== "GET") {
+            options.body = JSON.stringify({
+              name: name.value,
+              password: password.value,
+            });
+          }
+
+          const response = await fetch(
+            `/passwords/${method !== "POST" ? name.value : ""}`,
+            options
+          );
+
+          result.innerHTML = await response.text();
+        } catch (error) {
+          console.log(error);
+          result.innerHTML = `Error!! ${JSON.stringify(error)}`;
+        }
+      }
+
+      get.addEventListener("click", () => {
+        fetchPassword("GET");
+      });
+
+      post.addEventListener("click", () => {
+        fetchPassword("POST");
+      });
+
+      patch.addEventListener("click", () => {
+        fetchPassword("PATCH");
+      });
+
+      remove.addEventListener("click", () => {
+        fetchPassword("DELETE");
+      });
+    </script>
+  </body>
+</html>
